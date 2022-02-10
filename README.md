@@ -1,16 +1,16 @@
 ## React-Router-Dom-V6
 
-​     前言：
+#####      前言：
 
 ​     项目使用npx create-react-app my-app脚手架创建
 
-> 安装
+> ##### 安装
 
 ```bash
 $ yarn add react-router-dom@6
 ```
 
-> 修改src/index.js
+> ##### 修改src/index.js
 
 ```jsx
 import React from 'react';
@@ -27,7 +27,7 @@ ReactDOM.render(
 );
 ```
 
-> 新建组件文件夹src/components
+> ##### 新建组件如下src/components
 
 ```
 ├── components
@@ -41,7 +41,7 @@ ReactDOM.render(
 │       └── index.js
 ```
 
-> rfce快捷键修改每个（Login除外）index.js 如下
+> ##### rfce快捷键修改每个（Login除外）index.js 如下
 
 ```jsx
 import React from 'react'
@@ -53,18 +53,7 @@ function index() {
 export default index
 ```
 
-> 新建文件夹src/router
-
-> 按照以下布局新建文件
-
-```js
-├── router
-│   ├── loadable.js //懒加载 loader
-│   ├── index.js //主文件 渲染组件
-│   └── routes.js  //路由核心
-```
-
-> 注意：嵌套路由需引用<Outlet />组件作为出口
+> ##### 注意：嵌套路由需引用<Outlet />组件作为出口
 
 ```jsx
 /* src/components/Login/index.js */
@@ -84,9 +73,16 @@ function Login() {
 export default Login;
 ```
 
+> ##### 新建路由如下src/router
 
+```js
+├── router
+│   ├── loadable.js //懒加载 loader
+│   ├── index.js //主文件 渲染组件
+│   └── routes.js  //路由核心
+```
 
-> index.js
+> ##### index.js
 
 ```jsx
 /* src/router/index */
@@ -102,7 +98,7 @@ export default function Routes() {
 }
 ```
 
-> loadable.js
+> ##### loadable.js
 
 ```jsx
 /* src/router/loadable */
@@ -121,7 +117,7 @@ export default Loadable;
 
 ```
 
-> routes.js
+> ##### routes.js
 
 ```jsx
 /* src/router/routes */
@@ -140,7 +136,7 @@ const User = Loadable(lazy(() => import("../components/User")));
 const Home = Loadable(lazy(() => import("../components/Home")));
 const NotFound = Loadable(lazy(() => import("../components/NotFound")));
 
-/* 重定向 V6版本方法 详情参考代码末尾链接 */
+/* 重定向 V6版本方法 详情见底部附录 */
 function Redirect({ to }) {
   let navigate = useNavigate();
   useEffect(() => {
@@ -176,9 +172,7 @@ export default router;
 
 ```
 
-> [重定向功能在V6版本修改了，点击查看[详情]](https://reactrouter.com/docs/en/v6/upgrading/reach#what-about-clicking-links-that-arent-updated)
-
-> 修改app.js
+> ##### 修改app.js
 
 ```jsx
 import logo from "./logo.svg";
@@ -199,9 +193,13 @@ function App() {
 export default App;
 ```
 
-> 附录：
->
+
+
+> ##### 附录：
+
 > [源码地址：https://github.com/bingic/react-router-v6](https://github.com/bingic/react-router-v6)
 >
 > [router官网：https://reactrouter.com](https://reactrouter.com)
+>
+> [重定向功能-V6：https://reactrouter.com/docs/en/v6/upgrading/reach#what-about-clicking-links-that-arent-updated](https://reactrouter.com/docs/en/v6/upgrading/reach#what-about-clicking-links-that-arent-updated)
 
