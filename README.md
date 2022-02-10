@@ -1,70 +1,207 @@
-# Getting Started with Create React App
+## React-Router-Dom-V6
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+​     前言：
 
-## Available Scripts
+​     项目使用npx create-react-app my-app脚手架创建
 
-In the project directory, you can run:
+> 安装
 
-### `npm start`
+```bash
+$ yarn add react-router-dom@6
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+> 修改src/index.js
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import { BrowserRouter } from 'react-router-dom';
+//BrowserRouter将<App />包裹
+ReactDOM.render(
+  <BrowserRouter> 
+    <App />
+  </BrowserRouter>,
+  document.getElementById('root')
+);
+```
 
-### `npm test`
+> 新建组件文件夹src/components
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+├── components
+│   ├── Home
+│   │   └── index.js
+│   ├── Login
+│   │   └── index.js
+│   ├── NotFound
+│   │   └── index.js
+│   └── User
+│       └── index.js
+```
 
-### `npm run build`
+> rfce快捷键修改每个（Login除外）index.js 如下
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```jsx
+import React from 'react'
+function index() {
+  return (
+    <div>这里填写组件名称</div>
+  )
+}
+export default index
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> 新建文件夹src/router
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> 按照以下布局新建文件
 
-### `npm run eject`
+```js
+├── router
+│   ├── loadable.js //懒加载 loader
+│   ├── index.js //主文件 渲染组件
+│   └── routes.js  //路由核心
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+> 注意：嵌套路由需引用<Outlet />组件作为出口
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```jsx
+/* src/components/Login/index.js */
+import React from "react";
+import { Outlet } from "react-router-dom";
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+function Login() {
+  return (
+    <>
+      <div>父组件 Login</div>
+      嵌套组件如下
+      <Outlet />
+    </>
+  );
+}
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+export default Login;
+```
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+> index.js
 
-### Code Splitting
+```jsx
+/* src/router/index */
+import { useRoutes } from 'react-router-dom';
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+// routes
+import routes from '../router/routes';
 
-### Analyzing the Bundle Size
+// ==|| ROUTING RENDER 路由渲染 ||== //
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+export default function Routes() {
+    return useRoutes(routes);
+}
+```
 
-### Making a Progressive Web App
+> loadable.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```jsx
+/* src/router/loadable */
+import { Suspense } from "react";
 
-### Advanced Configuration
+// ==|| LOADABLE - LAZY LOADING ||== //
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+const Loadable = (Component) => (props) =>
+  (
+    <Suspense fallback={<div>loading...</div>}>
+      <Component {...props} />
+    </Suspense>
+  );
 
-### Deployment
+export default Loadable;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
 
-### `npm run build` fails to minify
+> routes.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```jsx
+/* src/router/routes */
+
+/* 懒加载方法 */
+import { lazy } from "react";
+/* app 布局 */
+import Login from "../components/Login";
+/* 引入Loadable为懒加载渲染组件 */
+import Loadable from "./loadable";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+/* 懒加载的组件 */
+const User = Loadable(lazy(() => import("../components/User")));
+const Home = Loadable(lazy(() => import("../components/Home")));
+const NotFound = Loadable(lazy(() => import("../components/NotFound")));
+
+/* 重定向 V6版本方法 详情参考代码末尾链接 */
+function Redirect({ to }) {
+  let navigate = useNavigate();
+  useEffect(() => {
+    navigate(to);
+  });
+  return null;
+}
+
+const router = [
+  {
+    path: "/",
+    element: <Login />,
+    children: [
+      {
+        /* 嵌套索引index 嵌套下 <Outlet /> 默认加载该组件 */
+        index: true,
+        element: <Home />,
+      },
+
+      { path: "/user", element: <User /> },
+    ],
+  },
+  { path: "/not", element: <NotFound /> },
+  // 重定向
+  { path: "/login", element: <Redirect to="/user" /> },
+
+  // 404找不到
+  { path: "*", element: <NotFound /> },
+];
+
+
+export default router;
+
+```
+
+> [重定向功能在V6版本修改了，点击查看[详情]](https://reactrouter.com/docs/en/v6/upgrading/reach#what-about-clicking-links-that-arent-updated)
+
+> 修改app.js
+
+```jsx
+import logo from "./logo.svg";
+import "./App.css";
+import Routes from "./router";
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        {/* 引用渲染路由组件 */}
+        <Routes />
+      </header>
+    </div>
+  );
+}
+
+export default App;
+```
+
+> 附录：
+>
+> [源码地址：https://github.com/bingic/react-router-v6](https://github.com/bingic/react-router-v6)
+>
+> [router官网：https://reactrouter.com](https://reactrouter.com)
+
